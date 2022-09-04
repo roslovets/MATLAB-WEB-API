@@ -113,29 +113,10 @@ classdef Auth < handle
         
         function [values, url] = getfrombrowser(obj, params)
             %% Open URL in browser and get specified params values
-            url = '';
-            isExt = com.mathworks.mlwidgets.html.HTMLPrefs.isSystemBrowserForExternalSites().booleanValue();
-            if isExt
-                com.mathworks.mlwidgets.html.HTMLPrefs.setSystemBrowserForExternalSites(java.lang.Boolean(false));
-            end
-            [~, h, ~] = web(obj.req.getfullurl(), '-new');
-            while ~h.isValid
-                % wait till Web Browser is ready
-            end
-            done = false;
-            while ~done
-                if ~isempty(h.getActiveBrowser)
-                    url = char(h.getCurrentLocation());
-                else
-                    break
-                end
-                done = all(contains(url, params + "="));
-            end
+            web(obj.req.getfullurl(), '-new');
+            url = inputdlg('Paste URL with code from browser');
+            url = string(url);
             values = obj.parsequery(url, params);
-            close(h);
-            if isExt
-                com.mathworks.mlwidgets.html.HTMLPrefs.setSystemBrowserForExternalSites(java.lang.Boolean(true));
-            end
         end
         
         function ps = parsequery(~, url, params)
@@ -146,7 +127,7 @@ classdef Auth < handle
                 qstr = sprintf('(%s)([^&#]+)', char(join(params, '|')));
             end
             ps = regexp(url, qstr, 'match');
-            ps = split(ps', '=');
+            ps = split(cellstr(ps)', '=');
             ps = reshape(ps, [], 2);
             ps = cell2struct(ps(:,2), ps(:,1));
         end
