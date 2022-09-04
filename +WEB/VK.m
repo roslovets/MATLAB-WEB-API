@@ -64,7 +64,7 @@ classdef VK < WEB.API.Common
             req = WEB.API.Req(obj.URL);
             req.addurl(method);
             if isfield(apiopts, 'httpPost') && apiopts.httpPost
-                params = obj.decode_params(params, ["message" "name" "description"]);
+                %params = obj.decode_params(params, ["message" "name" "description"]);
                 req.setbody(params, 1);
                 req.addbody('v', obj.ver);
                 req.setopts('MediaType', 'application/x-www-form-urlencoded');
